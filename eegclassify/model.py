@@ -1,18 +1,31 @@
-import torch
 from torch import nn, tensor
 from torchsummary import summary
 
 
-def get_device() -> torch.device:
+def get_model(model_name: str, activation: str) -> nn.Module:
     """
-    Get the device.
+    Get the model.
+
+    Args:
+        model_name (str): string of model name
+        activation (str): string of activation function
+
+    Raises:
+        ValueError: We only allow the following models for experiment:
+            - 'EEGNet'
+            - 'DeepConvNet'
 
     Returns:
-        torch.device: device
+        nn.Module: model
     """
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    print("Using {} device".format(device))
-    return device
+    if model_name == 'EEGNet':
+        model = EEGNet(activation=activation)
+    elif model_name == 'DeepConvNet':
+        model = DeepConvNet(activation=activation)
+    else:
+        raise ValueError(f'Not included model {model_name}')
+
+    return model
 
 
 def get_activation(activation: str) -> nn.Module:
@@ -164,7 +177,7 @@ class DeepConvNet(ExtendedModule):
             nn.MaxPool2d(kernel_size=(1, 2)),
             nn.Dropout(p=dropout_prob)
         )
-        self.second_conv = nn. Sequential(
+        self.second_conv = nn.Sequential(
             nn.Conv2d(25, 50, kernel_size=(1, 5)),
             nn.BatchNorm2d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
             get_activation(activation),

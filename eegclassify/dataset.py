@@ -21,7 +21,7 @@ class BCIDataContainer:
         self.test_y = test_y
 
 
-def gen_loader(data_container: BCIDataContainer, batch_size: int = 32) -> DataLoader:
+def gen_loader(data_container: BCIDataContainer, batch_size: int = 64) -> DataLoader:
     """
     Generate data loader.
 
