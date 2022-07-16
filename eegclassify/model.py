@@ -2,13 +2,14 @@ from torch import nn, tensor
 from torchsummary import summary
 
 
-def get_model(model_name: str, activation: str) -> nn.Module:
+def get_model(model_name: str, activation: str, **kwargs) -> nn.Module:
     """
     Get the model.
 
     Args:
         model_name (str): string of model name
         activation (str): string of activation function
+        **kwargs: keyword arguments
 
     Raises:
         ValueError: We only allow the following models for experiment:
@@ -19,9 +20,9 @@ def get_model(model_name: str, activation: str) -> nn.Module:
         nn.Module: model
     """
     if model_name == 'EEGNet':
-        model = EEGNet(activation=activation)
+        model = EEGNet(activation=activation, **kwargs)
     elif model_name == 'DeepConvNet':
-        model = DeepConvNet(activation=activation)
+        model = DeepConvNet(activation=activation, **kwargs)
     else:
         raise ValueError(f'Not included model {model_name}')
 
@@ -95,7 +96,7 @@ class EEGNet(ExtendedModule):
         )
         self.depthwise_conv = nn.Sequential(
             nn.Conv2d(
-                16, spatial_filter_depth * temporal_filter_size_1, kernel_size=(2, 1),
+                temporal_filter_size_1, spatial_filter_depth * temporal_filter_size_1, kernel_size=(2, 1),
                 stride=(1, 1),
                 groups=temporal_filter_size_1, bias=False
             ),
@@ -199,7 +200,7 @@ class DeepConvNet(ExtendedModule):
             nn.Dropout(p=dropout_prob),
             nn.Flatten()
         )
-        self.classifier = nn.Linear(9200, 2, bias=True)
+        self.classifier = nn.Linear(8600, 2, bias=True)
 
     def forward(self, x: tensor) -> tensor:
         """

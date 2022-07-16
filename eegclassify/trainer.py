@@ -64,7 +64,10 @@ def get_optimizer(optimizer: str, model: nn.Module, lr: float, weight_decay: flo
 
 
 class Trainer:
-    def __init__(self, model_name: str, activation: str, loss: str, optimizer: str, lr: float, weight_decay: float = 0.0):
+    def __init__(
+        self, model_name: str, activation: str, loss: str, optimizer: str, lr: float, weight_decay: float = 0.0, **
+        kwargs
+    ):
         """
         Initialize the trainer.
 
@@ -75,6 +78,7 @@ class Trainer:
             optimizer (str): string of optimizer
             lr (float): learning rate
             weight_decay (float, optional): weight decay. Defaults to 0.0.
+            **kwargs: keyword arguments
         """
         self.model_name = model_name
         self.activation = activation
@@ -84,7 +88,7 @@ class Trainer:
         self.weight_decay = weight_decay
 
         self.device = get_device()
-        self.model = get_model(model_name, self.activation).to(self.device)
+        self.model = get_model(model_name, self.activation, **kwargs).to(self.device)
         self.loss_fn = get_loss(loss)
         self.optimizer = get_optimizer(optimizer, self.model, lr, weight_decay)
 
