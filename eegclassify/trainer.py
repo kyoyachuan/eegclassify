@@ -63,6 +63,39 @@ def get_optimizer(optimizer: str, model: nn.Module, lr: float, weight_decay: flo
         raise ValueError(f'Not included optimizer {optimizer}')
 
 
+class LossAndAccCollector:
+    def __init__(self):
+        """
+        Initialize the loss and acc collector.
+        """
+        self.train_loss = []
+        self.test_loss = []
+        self.train_acc = []
+        self.test_acc = []
+
+    def add(self, loss: float, accuracy: float):
+        """
+        Add loss and accuracy to the collector.
+
+        Args:
+            loss (float): loss
+            accuracy (float): accuracy
+        """
+        self.train_loss.append(loss)
+        self.train_acc.append(accuracy)
+
+    def add_test(self, loss: float, accuracy: float):
+        """
+        Add loss and accuracy to the collector.
+
+        Args:
+            loss (float): loss
+            accuracy (float): accuracy
+        """
+        self.test_loss.append(loss)
+        self.test_acc.append(accuracy)
+
+
 class Trainer:
     def __init__(
         self, model_name: str, activation: str, loss: str, optimizer: str, lr: float, weight_decay: float = 0.0, **
@@ -86,6 +119,7 @@ class Trainer:
         self.optimizer = optimizer
         self.lr = lr
         self.weight_decay = weight_decay
+        self.collector = LossAndAccCollector()
 
         self.device = get_device()
         self.model = get_model(model_name, self.activation, **kwargs).to(self.device)
@@ -102,8 +136,8 @@ class Trainer:
             epochs (int, optional): number of epochs. Defaults to 300.
         """
         for epoch in range(epochs):
-            self.train_epoch(train_loader, epoch)
-            self.validate_epoch(val_loader, epoch)
+            self.train_epoch(train_loader, epoch+1)
+            self.validate_epoch(val_loader, epoch+1)
 
     def train_epoch(self, train_loader: torch.utils.data.DataLoader, epoch: int):
         """
@@ -114,17 +148,29 @@ class Trainer:
             epoch (int): epoch
         """
         self.model.train()
+        train_loss = 0
+        train_accuracy = 0
         with tqdm(train_loader, unit='batch') as tepoch:
+            tepoch.set_description(f'Epoch {epoch}')
             for data, target in tepoch:
-                tepoch.set_description(f'Epoch {epoch}')
                 data, target = data.to(self.device), target.to(self.device)
                 self.optimizer.zero_grad()
                 output = self.model(data)
                 loss = self.loss_fn(output, target)
-                accuracy = self._compute_accuracy(output, target)
+                accuracy = self.compute_accuracy(output, target)
                 loss.backward()
                 self.optimizer.step()
                 tepoch.set_postfix(loss=loss.item(), accuracy=accuracy)
+
+                train_loss += loss.item()
+                train_accuracy += accuracy
+
+        train_loss /= len(train_loader)
+        train_accuracy /= len(train_loader)
+
+        self.collector.add(train_loss, train_accuracy)
+        print('Training set: Average loss: {:.4f}, Accuracy: ({:.2f}%)'.format(
+            train_loss, 100 * train_accuracy))
 
     def validate_epoch(self, val_loader: torch.utils.data.DataLoader, epoch: int):
         """
@@ -142,13 +188,14 @@ class Trainer:
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)
                 val_loss += self.loss_fn(output, target).item()
-                val_accuracy += self._compute_accuracy(output, target)
+                val_accuracy += self.compute_accuracy(output, target)
         val_loss /= len(val_loader)
-        print('\nValidation set: Average loss: {:.4f}, Accuracy: {:.4f} / {} ({:.0f}%)\n'.format(
-            val_loss, val_accuracy, len(val_loader),
-            val_accuracy / len(val_loader)))
+        val_accuracy /= len(val_loader)
+        self.collector.add_test(val_loss, val_accuracy)
+        print('Validation set: Average loss: {:.4f}, Accuracy: ({:.2f}%)'.format(
+            val_loss, 100 * val_accuracy))
 
-    def _compute_accuracy(self, output: torch.Tensor, target: torch.Tensor) -> float:
+    def compute_accuracy(self, output: torch.Tensor, target: torch.Tensor) -> float:
         """
         Compute the accuracy.
 
@@ -161,4 +208,4 @@ class Trainer:
         """
         pred = output.argmax(dim=1, keepdim=True)
         correct = pred.eq(target.view_as(pred)).sum().item()
-        return 100. * correct / len(target)
+        return correct / len(target)
