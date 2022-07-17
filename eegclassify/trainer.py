@@ -98,8 +98,8 @@ class LossAndAccCollector:
 
 class Trainer:
     def __init__(
-        self, model_name: str, activation: str, loss: str, optimizer: str, lr: float, weight_decay: float = 0.0, **
-        kwargs
+        self, model_name: str, activation: str, lr: float, optimizer: str = 'adam', loss: str = 'cross_entropy',
+        weight_decay: float = 0.0, **kwargs
     ):
         """
         Initialize the trainer.
@@ -107,9 +107,9 @@ class Trainer:
         Args:
             model_name (str): string of model name
             activation (str): string of activation function
-            loss (str): string of loss function
-            optimizer (str): string of optimizer
             lr (float): learning rate
+            optimizer (str): string of optimizer. Defaults to 'adam'.
+            loss (str): string of loss function. Defaults to 'cross_entropy'.
             weight_decay (float, optional): weight decay. Defaults to 0.0.
             **kwargs: keyword arguments
         """
