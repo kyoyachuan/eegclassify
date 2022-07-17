@@ -27,7 +27,7 @@ def gen_loader(data_container: BCIDataContainer, batch_size: int = 64) -> DataLo
 
     Args:
         data_container (BCIDataContainer): data container
-        batch_size (int, optional): batch size. Defaults to 32.
+        batch_size (int, optional): batch size. Defaults to 64.
 
     Returns:
         DataLoader: data loader
@@ -42,6 +42,6 @@ def gen_loader(data_container: BCIDataContainer, batch_size: int = 64) -> DataLo
     )
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=len(test_dataset), shuffle=False)
 
     return train_loader, test_loader

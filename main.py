@@ -8,8 +8,8 @@ def main():
     dataset = BCIDataContainer(*read_bci_data())
     train_loader, test_loader = gen_loader(dataset)
 
-    trainer = Trainer('EEGNet', 'leaky_relu', 'cross_entropy', 'adam', 0.01, 0.00001,
-                      spatial_filter_depth=2, temporal_filter_size_1=32, temporal_filter_size_2=64)
+    trainer = Trainer('EEGNet', 'relu', 'cross_entropy', 'adam', 0.001, 0.001, dropout_prob=0.5,
+                      spatial_filter_depth=2, temporal_filter_size_1=16, temporal_filter_size_2=32)
     print(trainer.model.summary(input_size=dataset.train_x.shape[1:]))
 
     trainer.train(train_loader, test_loader, epochs=300)

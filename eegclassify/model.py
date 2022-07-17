@@ -133,9 +133,9 @@ class EEGNet(ExtendedModule):
                 padding=0
             ),
             nn.Dropout(p=dropout_prob),
-            nn.Flatten()
         )
         self.classifier = nn.Sequential(
+            nn.Flatten(),
             nn.Linear(temporal_filter_size_2 * 23, 2, bias=True)
         )
 
@@ -159,6 +159,7 @@ class EEGNet(ExtendedModule):
 class DeepConvNet(ExtendedModule):
     def __init__(
         self,
+        channel_list: list = [25, 50, 100, 200],
         dropout_prob: float = 0.5,
         activation: str = 'elu'
     ):
@@ -166,41 +167,49 @@ class DeepConvNet(ExtendedModule):
         DeepConvNet
 
         Args:
+            channel_list (list, optional): channel list. Defaults to [25, 50, 100, 200].
             dropout_prob (float, optional): dropout probability. Defaults to 0.5.
             activation (str, optional): activation function use in hidden layer. Defaults to 'elu'.
         """
         super(DeepConvNet, self).__init__()
         self.first_conv = nn.Sequential(
-            nn.Conv2d(1, 25, kernel_size=(1, 5)),
-            nn.Conv2d(25, 25, kernel_size=(2, 1)),
-            nn.BatchNorm2d(25, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
+            nn.Conv2d(1, channel_list[0], kernel_size=(1, 5)),
+            nn.Conv2d(channel_list[0], channel_list[0], kernel_size=(2, 1)),
+            nn.BatchNorm2d(channel_list[0], eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
             get_activation(activation),
             nn.MaxPool2d(kernel_size=(1, 2)),
             nn.Dropout(p=dropout_prob)
         )
-        self.second_conv = nn.Sequential(
-            nn.Conv2d(25, 50, kernel_size=(1, 5)),
-            nn.BatchNorm2d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
+        self.second_conv = self._conv_block(channel_list[0], channel_list[1], dropout_prob, activation)
+        self.third_conv = self._conv_block(channel_list[1], channel_list[2], dropout_prob, activation)
+        self.fourth_conv = self._conv_block(channel_list[2], channel_list[3], dropout_prob, activation)
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(8600, 2, bias=True)
+        )
+
+    def _conv_block(
+            self, in_channels: int, out_channels: int, dropout_prob: float = 0.5, activation: str = 'elu'
+    ) -> nn.Sequential:
+        """
+        Convolutional block.
+
+        Args:
+            in_channels (int): input channels.
+            out_channels (int): output channels.
+            dropout_prob (float, optional): dropout probability. Defaults to 0.5.
+            activation (str, optional): activation function in hidden layer. Defaults to 'elu'.
+
+        Returns:
+            nn.Sequential: convolutional block.
+        """
+        return nn.Sequential(
+            nn.Conv2d(in_channels, out_channels, kernel_size=(1, 5)),
+            nn.BatchNorm2d(out_channels, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
             get_activation(activation),
             nn.MaxPool2d(kernel_size=(1, 2)),
             nn.Dropout(p=dropout_prob)
         )
-        self.third_conv = nn.Sequential(
-            nn.Conv2d(50, 100, kernel_size=(1, 5)),
-            nn.BatchNorm2d(100, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
-            get_activation(activation),
-            nn.MaxPool2d(kernel_size=(1, 2)),
-            nn.Dropout(p=dropout_prob)
-        )
-        self.fourth_conv = nn.Sequential(
-            nn.Conv2d(100, 200, kernel_size=(1, 5)),
-            nn.BatchNorm2d(200, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
-            get_activation(activation),
-            nn.MaxPool2d(kernel_size=(1, 2)),
-            nn.Dropout(p=dropout_prob),
-            nn.Flatten()
-        )
-        self.classifier = nn.Linear(8600, 2, bias=True)
 
     def forward(self, x: tensor) -> tensor:
         """
