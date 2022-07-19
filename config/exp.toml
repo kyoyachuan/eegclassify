@@ -4,7 +4,7 @@ activation = "relu"  # "relu" or "elu" or "leaky_relu"
 lr = 0.001  # learning rate
 weight_decay = 0.001  # weight decay
 dropout_prob = 0.5  # dropout rate
-epochs = 5
+epochs = 300
 
 [specific.EEGNet]
 spatial_filter_depth = 2
@@ -25,7 +25,7 @@ value = ["relu", "elu", "leaky_relu"]
 [[experiment]]
 
 name = "DeepConvNet_activation"
-enable = false
+enable = true
 model_name = "DeepConvNet"
 experiment = "activation"
 value = ["relu", "elu", "leaky_relu"]

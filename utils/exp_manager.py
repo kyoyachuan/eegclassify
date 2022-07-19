@@ -1,3 +1,5 @@
+import pprint
+
 import tomli
 
 from .plot import plot_accuracy_curve_by_exp_group
@@ -115,6 +117,7 @@ class ExperimentManager:
         """
         self.config_filename = config_filename
         self.load_and_parse_config()
+        self.summary_result = dict()
 
     def __call__(self, function):
         """
@@ -129,8 +132,12 @@ class ExperimentManager:
                 if experiment['enable'] == True:
                     self.set_experiment_group(experiment)
                     for exp in self.experiment_group:
-                        print(exp)
+                        pprint.pprint(exp)
                         self.experiment_group.results = function(exp)
+                    self.summary_result[experiment['name']] = dict()
+                    for key, value in self.experiment_group.results.items():
+                        self.summary_result[experiment['name']][key] = value[-1]
+            pprint.pprint(self.summary_result)
         return wrapper
 
     def load_and_parse_config(self):
