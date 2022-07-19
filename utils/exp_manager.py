@@ -6,14 +6,18 @@ from .plot import plot_accuracy_curve_by_exp_group
 
 
 class ExperimentCfg:
-    def __init__(self, cfg: dict):
+    def __init__(self, cfg: dict, name: str = None, exp_value: str = None):
         """
         Initialize the experiment configuration.
 
         Args:
             cfg (dict): configuration dictionary
+            name (str): name of the experiment
+            exp_value (str): value of the experiment
         """
         self.trainer = cfg.copy()
+        self.name = name
+        self.exp_value = exp_value
         self.reorganize()
 
     def reorganize(self):
@@ -81,7 +85,7 @@ class ExperimentGroup:
         for exp_param in self.exp_value:
             cfg = self.params
             cfg[self.exp_column] = exp_param
-            yield ExperimentCfg(cfg)
+            yield ExperimentCfg(cfg, name=self.name, exp_value=exp_param)
         else:
             plot_accuracy_curve_by_exp_group(fname=f'result/{self.name}.png', title=self.name, **self._exp_results)
             return StopIteration

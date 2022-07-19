@@ -1,3 +1,5 @@
+import torch
+
 from eegclassify.dataset import BCIDataContainer, gen_loader
 from eegclassify.trainer import Trainer
 from utils.dataloader import read_bci_data
@@ -22,6 +24,8 @@ def main(cfg: ExperimentCfg) -> dict:
     print(trainer.model.summary(input_size=dataset.train_x.shape[1:]))
 
     trainer.train(train_loader, test_loader, epochs=cfg.epochs)
+
+    torch.save(trainer.model.state_dict(), f"models/{cfg.name}_{cfg.exp_value}.pt")
 
     return {
         'train': trainer.collector.train_acc,

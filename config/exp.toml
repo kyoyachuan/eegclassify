@@ -2,15 +2,15 @@
 model_name = "EEGNet"  # "EEGNet" or "DeepConvNet"
 activation = "relu"  # "relu" or "elu" or "leaky_relu"
 lr = 0.001  # learning rate
-weight_decay = 0.001  # weight decay
+weight_decay = 0.0001 # weight decay
 dropout_prob = 0.5  # dropout rate
-epochs = 300
+epochs = 3
 batch_size = 64
 
 [specific.EEGNet]
-spatial_filter_depth = 2
+spatial_filter_depth = 4
 temporal_filter_size_1 = 16
-temporal_filter_size_2 = 32
+temporal_filter_size_2 = 64
 
 [specific.DeepConvNet]
 channel_list = [25, 50, 100, 200]
@@ -26,7 +26,7 @@ value = ["relu", "elu", "leaky_relu"]
 [[experiment]]
 
 name = "DeepConvNet_activation"
-enable = true
+enable = false
 model_name = "DeepConvNet"
 experiment = "activation"
 value = ["relu", "elu", "leaky_relu"]

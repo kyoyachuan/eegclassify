@@ -1,0 +1,10 @@
+[model]
+
+model_path = "EEGNet_activation_relu.pt"
+model_name = "EEGNet"  # "EEGNet" or "DeepConvNet"
+activation = "relu"  # "relu" or "elu" or "leaky_relu"
+dropout_prob = 0.5  # dropout rate
+spatial_filter_depth = 4
+temporal_filter_size_1 = 16
+temporal_filter_size_2 = 64
+channel_list = [25, 50, 100, 200]

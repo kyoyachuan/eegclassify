@@ -192,7 +192,7 @@ class Trainer:
         val_loss /= len(val_loader)
         val_accuracy /= len(val_loader)
         self.collector.add_test(val_loss, val_accuracy)
-        print('Validation set: Average loss: {:.4f}, Accuracy: ({:.2f}%)'.format(
+        print('Testing set: Average loss: {:.4f}, Accuracy: ({:.2f}%)'.format(
             val_loss, 100 * val_accuracy))
 
     def compute_accuracy(self, output: torch.Tensor, target: torch.Tensor) -> float:
