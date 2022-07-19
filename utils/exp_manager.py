@@ -21,6 +21,7 @@ class ExperimentCfg:
         Reorganize the configuration dictionary.
         """
         self.epochs = self.trainer.pop('epochs')
+        self.batch_size = self.trainer.pop('batch_size')
 
     def __repr__(self) -> str:
         """

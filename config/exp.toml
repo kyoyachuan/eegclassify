@@ -5,6 +5,7 @@ lr = 0.001  # learning rate
 weight_decay = 0.001  # weight decay
 dropout_prob = 0.5  # dropout rate
 epochs = 300
+batch_size = 64
 
 [specific.EEGNet]
 spatial_filter_depth = 2
