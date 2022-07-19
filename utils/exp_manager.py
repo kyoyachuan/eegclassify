@@ -116,15 +116,13 @@ class ExperimentManager:
         self.config_filename = config_filename
         self.load_and_parse_config()
 
-    def __call__(self, function: function) -> function:
+    def __call__(self, function):
         """
         Decorate the function.
 
         Args:
             function (function): function to be decorated
 
-        Returns:
-            function: decorated function
         """
         def wrapper():
             for experiment in self.experiments:
