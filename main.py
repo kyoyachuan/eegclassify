@@ -18,7 +18,7 @@ def main(cfg: ExperimentCfg) -> dict:
         dict: dictionary of accuracy results
     """
     dataset = BCIDataContainer(*read_bci_data())
-    train_loader, test_loader = gen_loader(dataset, batch_size=cfg.batch_size)
+    train_loader, test_loader = gen_loader(dataset, batch_size=cfg.batch_size, use_aug=cfg.use_aug)
 
     trainer = Trainer(**cfg.trainer)
     trainer.model.summary(input_size=dataset.train_x.shape[1:])
