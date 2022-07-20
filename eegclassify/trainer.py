@@ -137,7 +137,7 @@ class Trainer:
         """
         for epoch in range(epochs):
             self.train_epoch(train_loader, epoch+1)
-            self.validate_epoch(val_loader, epoch+1)
+            self.validate_epoch(val_loader)
 
     def train_epoch(self, train_loader: torch.utils.data.DataLoader, epoch: int):
         """
