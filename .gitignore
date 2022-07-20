@@ -130,4 +130,4 @@ dmypy.json
 
 # Custom
 bci_eeg_dataset/
-models/
+models/*.pt
