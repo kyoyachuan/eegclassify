@@ -21,7 +21,7 @@ def main(cfg: ExperimentCfg) -> dict:
     train_loader, test_loader = gen_loader(dataset, batch_size=cfg.batch_size)
 
     trainer = Trainer(**cfg.trainer)
-    print(trainer.model.summary(input_size=dataset.train_x.shape[1:]))
+    trainer.model.summary(input_size=dataset.train_x.shape[1:])
 
     trainer.train(train_loader, test_loader, epochs=cfg.epochs)
 

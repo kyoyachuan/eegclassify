@@ -17,6 +17,8 @@ def eval():
     dataset = BCIDataContainer(*read_bci_data())
     _, test_loader = gen_loader(dataset)
 
+    device = get_device()
+
     if cfg['model']['model_name'] == 'EEGNet':
         model = EEGNet(
             activation=cfg['model']['activation'],
@@ -34,12 +36,12 @@ def eval():
     model.load_state_dict(torch.load(f"models/{cfg['model']['model_path']}"))
 
     print(model)
-    print(model.summary(input_size=dataset.train_x.shape[1:]))
+    model.summary(input_size=dataset.train_x.shape[1:])
 
     model.eval()
     with torch.no_grad():
         for data, target in test_loader:
-            data, target = data.to(get_device()), target.to(get_device())
+            data, target = data.to(device), target.to(device)
             output = model(data)
 
             pred = output.argmax(dim=1, keepdim=True)

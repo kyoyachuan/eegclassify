@@ -172,13 +172,12 @@ class Trainer:
         print('Training set: Average loss: {:.4f}, Accuracy: ({:.2f}%)'.format(
             train_loss, 100 * train_accuracy))
 
-    def validate_epoch(self, val_loader: torch.utils.data.DataLoader, epoch: int):
+    def validate_epoch(self, val_loader: torch.utils.data.DataLoader):
         """
         Validate the model for one epoch.
 
         Args:
             val_loader (torch.utils.data.DataLoader): validation loader
-            epoch (int): epoch
         """
         self.model.eval()
         val_loss = 0
