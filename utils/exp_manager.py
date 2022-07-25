@@ -177,7 +177,7 @@ class ExperimentManager:
         """
         name = experiment['name']
         model_name = experiment['model_name']
-        default_params = self.defaults | self.specifics[model_name]
+        default_params = self.defaults.copy() | self.specifics[model_name].copy()
         for key in experiment.keys():
             if key in default_params:
                 default_params[key] = experiment[key]
