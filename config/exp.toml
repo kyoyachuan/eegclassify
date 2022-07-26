@@ -19,7 +19,7 @@ channel_list = [25, 50, 100, 200]
 [[experiment]]
 
 name = "EEGNet_activation"
-enable = false
+enable = true
 model_name = "EEGNet"
 experiment = "activation"
 value = ["relu", "elu", "leaky_relu"]
@@ -27,7 +27,7 @@ value = ["relu", "elu", "leaky_relu"]
 [[experiment]]
 
 name = "DeepConvNet_activation"
-enable = false
+enable = true
 model_name = "DeepConvNet"
 experiment = "activation"
 value = ["relu", "elu", "leaky_relu"]
